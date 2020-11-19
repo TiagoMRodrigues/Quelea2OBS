@@ -115,7 +115,7 @@ def hello_world():
 
         splited_lines = to_obs_str.split("\n")
         for line_ in range(n_lines):
-            fline = ".".join(file_location.split(".")[:-1])+str(line_ + 1)+file_location.split(".")[-1]
+            fline = ".".join(file_location.split(".")[:-1])+str(line_ + 1)+'.'+file_location.split(".")[-1]
             with open(fline, "w") as f:
                 write_this = ""
                 if len(splited_lines) > line_:
