@@ -112,7 +112,17 @@ def hello_world():
     if print_to_file:
         with open(file_location, "w") as f:
             print(to_obs_str.strip(), file=f)
-            print_to_file = False
+
+        splited_lines = to_obs_str.split("\n")
+        for line_ in range(n_lines):
+            fline = ".".join(file_location.split(".")[:-1])+str(line_ + 1)+file_location.split(".")[-1]
+            with open(fline, "w") as f:
+                write_this = ""
+                if len(splited_lines) > line_:
+                    write_this = splited_lines[line_]
+                print(write_this, file=f)
+
+        print_to_file = False
 
     return Response(parsed_html.prettify(), status=r.status_code, headers=dict(r.raw.headers),)
 
