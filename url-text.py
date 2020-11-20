@@ -28,10 +28,11 @@ def update_text(b,u):
 		source = obs.obs_get_source_by_name(b)
 		if source is not None:
 			try:
+				obs.script_log(obs.LOG_INFO,f"{str(datetime.datetime.now())} - Requesting <{u}>")
 				with urllib.request.urlopen(u) as response:
 					data = response.read()
 					text = data.decode('utf-8')
-					obs.script_log(obs.LOG_INFO,text)
+					obs.script_log(obs.LOG_INFO,f"{str(datetime.datetime.now())} - Requesting <{u}> got me <{text}>")
 
 					settings = obs.obs_data_create()
 					obs.obs_data_set_string(settings, "text", text)
@@ -39,7 +40,7 @@ def update_text(b,u):
 					obs.obs_data_release(settings)
 
 			except urllib.error.URLError as err:
-				obs.script_log(obs.LOG_INFO, "Error opening URL '" + url + "': " + str(err))
+				obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} -  Error opening URL '" + url + "': " + str(err))
 				sleep(1)
 				#obs.remove_current_callback()
 
@@ -51,7 +52,7 @@ def update_text(b,u):
 
 
 def __start__():
-	obs.script_log(obs.LOG_INFO, f"BEGIN START FUNCTION")
+	obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - BEGIN START FUNCTION")
 
 	__stop__()
 	global update_threads
@@ -62,15 +63,15 @@ def __start__():
 	update_threads = []
 
 	for k,v in label_2_url.items():
-		obs.script_log(obs.LOG_INFO, f"starting thread {k} : {v}")
+		obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - starting thread {k} : {v}")
 		update_thread = threading.Thread(target=keep_updating_fn, args=(k,v))
 		update_thread.start()
 		update_threads.append(update_thread)
-	obs.script_log(obs.LOG_INFO, f"END START FUNCTION")
+	obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - END START FUNCTION")
 
 
 def __stop__():
-	obs.script_log(obs.LOG_INFO, f"BEGIN STOP FUNCTION")
+	obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - BEGIN STOP FUNCTION")
 	global update_threads
 	global keep_updating
 	global label_2_url
@@ -80,42 +81,42 @@ def __stop__():
 		obs.script_log(obs.LOG_INFO, f"stopping {update_thread is not None}")
 		if update_thread is not None:
 			update_thread.join()
-	obs.script_log(obs.LOG_INFO, f"END STOP FUNCTION")
+	obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - END STOP FUNCTION")
 
 def start_pressed(props, prop):
-	obs.script_log(obs.LOG_INFO, f"START WAS PRESSED")
+	obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - START WAS PRESSED")
 	__start__()
 
 
 def stop_pressed(props, prop):
-	obs.script_log(obs.LOG_INFO, f"STOP WAS PRESSED")
+	obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - STOP WAS PRESSED")
 	__stop__()
 
 
 def __load_pressed__():
-	obs.script_log(obs.LOG_INFO, f"BEGIN LOAD PRESSED FUNCTION")
+	obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - BEGIN LOAD PRESSED FUNCTION")
 	global label_2_url
 	global url
 	global multiline_square
 
 	label_2_url = json.loads(multiline_square)
-	obs.script_log(obs.LOG_INFO, f"END LOAD PRESSED FUNCTION")
+	obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - END LOAD PRESSED FUNCTION")
 
 
 def load_pressed(props, prop):
-	obs.script_log(obs.LOG_INFO, f"LOAD WAS PRESSED")
+	obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - LOAD WAS PRESSED")
 	__load_pressed__()
 
 
 def script_load(settings):
-	obs.script_log(obs.LOG_INFO, f"SCRIPT LOADED")
+	obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - SCRIPT LOADED")
 	script_update(settings)
 	__load_pressed__()
 	__start__()
 
 
 def script_unloaded():
-	obs.script_log(obs.LOG_INFO, f"SCRIPT UNLOADED")
+	obs.script_log(obs.LOG_INFO, f"{str(datetime.datetime.now())} - SCRIPT UNLOADED")
 	__stop__()
 
 # ------------------------------------------------------------

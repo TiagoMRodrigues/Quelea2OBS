@@ -18,6 +18,8 @@ timestamps = {}
 splited_lines = []
 to_obs_str = ""
 current_timestamp = datetime.datetime.now()
+blanked = "some value"
+bible = "some value"
 
 def make_request(request_):
     url = request_.path
@@ -50,14 +52,31 @@ def section(slabel: str):
     return "section <"+section+">subsection <"+subsection+">"
 
 
+@app.route('/status')
+def status():
+    global blanked
+    global current_timestamp
+    r = make_request(request)
+    n_blanked = any([x == "true"for x in r.text.split(",")[:3]])
+
+    if n_blanked != blanked:
+        blanked = n_blanked
+        current_timestamp = datetime.datetime.now()
+
+    return  Response(r.text, status=r.status_code, headers=dict(r.raw.headers),)
+
+
+
+
 @app.route('/lyrics')
-def hello_world():
+def lyrics():
     global selected
     global previous_hash
     global print_to_file
     global splited_lines
     global to_obs_str
     global current_timestamp
+    global bible
 
     r = make_request(request)
     r.encoding = quelea_encode
@@ -69,6 +88,9 @@ def hello_world():
 
 
     parsed_html = BeautifulSoup(r.text, features="html.parser", from_encoding=r.encoding)
+
+    bible = len(parsed_html.find_all("sup")) > 0
+
     x = parsed_html.find(attrs={"class":"inner current"})
     p = x.findChildren(name='p')[0] # type: element.Tag
     f_on_c = p.attrs["onclick"]
@@ -81,6 +103,8 @@ def hello_world():
     new_div = None
     to_obs = False
     to_obs_str = ""
+
+
     for s in span_list:
         if new_a is None:
             a_attrs = {"onclick":f"""section("{section}ss{len(n_divs)}");"""}
@@ -143,7 +167,9 @@ def live_obs(identifier, portion):
     global current_timestamp
     global splited_lines
     global to_obs_str
-    
+    global blanked
+    global bible
+
     n = datetime.datetime.now()
     timeout = True
     while((datetime.datetime.now() - n).total_seconds() < 10):
@@ -157,14 +183,28 @@ def live_obs(identifier, portion):
         timestamps[identifier] = current_timestamp
     
     tbr = ""
-    if portion.lower() == 'all':
-        tbr = to_obs_str
+    if blanked:
+        tbr = ""
+    elif portion == "bible":
+        if bible:
+            tbr = to_obs_str
+        else:
+            tbr = ""
+
+    elif portion.lower() == 'all':
+        if bible:
+            tbr = ""
+        else:
+            tbr = to_obs_str
     else:
         if portion.isnumeric():
             p_int = int(portion)
             print(len(splited_lines) , (p_int -1) , p_int , 0)
             if (p_int -1) < len(splited_lines)  and p_int > 0:
-                tbr = splited_lines[p_int - 1] 
+                if bible:
+                    tbr = ""
+                else:
+                    tbr = splited_lines[p_int - 1] 
 
 
     return Response(tbr, status=200, mimetype='text/plain')
