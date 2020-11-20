@@ -1,10 +1,12 @@
 import requests
 import html.parser
+import datetime
 
 from flask import Flask, Response, request
 from bs4 import BeautifulSoup, element
 from typing import List
 from config import *
+from time import sleep
 
 app = Flask(__name__)
 
@@ -12,7 +14,10 @@ update_file = False
 selected = 0
 previous_hash = 0
 print_to_file = True
-
+timestamps = {}
+splited_lines = []
+to_obs_str = ""
+current_timestamp = datetime.datetime.now()
 
 def make_request(request_):
     url = request_.path
@@ -50,6 +55,9 @@ def hello_world():
     global selected
     global previous_hash
     global print_to_file
+    global splited_lines
+    global to_obs_str
+    global current_timestamp
 
     r = make_request(request)
     r.encoding = quelea_encode
@@ -123,8 +131,44 @@ def hello_world():
                 print(write_this, file=f)
 
         print_to_file = False
+        current_timestamp = datetime.datetime.now()
 
     return Response(parsed_html.prettify(), status=r.status_code, headers=dict(r.raw.headers),)
+
+
+
+@app.route('/live_obs/<identifier>/<portion>')
+def live_obs(identifier, portion):
+    global timestamps
+    global current_timestamp
+    global splited_lines
+    global to_obs_str
+    
+    n = datetime.datetime.now()
+    timeout = True
+    while((datetime.datetime.now() - n).total_seconds() < 10):
+        if identifier not in timestamps or timestamps[identifier] < current_timestamp:
+            timeout = False
+            break
+
+        sleep(.1)
+
+    if timeout == False:
+        timestamps[identifier] = current_timestamp
+    
+    tbr = ""
+    if portion.lower() == 'all':
+        tbr = to_obs_str
+    else:
+        if portion.isnumeric():
+            p_int = int(portion)
+            print(len(splited_lines) , (p_int -1) , p_int , 0)
+            if (p_int -1) < len(splited_lines)  and p_int > 0:
+                tbr = splited_lines[p_int - 1] 
+
+
+    return Response(tbr, status=200, mimetype='text/plain')
+
 
 def return_response(r):
     headers = dict(r.raw.headers)
