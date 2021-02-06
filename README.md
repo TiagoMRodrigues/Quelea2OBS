@@ -13,6 +13,7 @@ go to ```configuration > server settings``` and activate mobile remote
 
 ## Python configuration
 change the lines for the ip and port that appear in server settings.
+
 change file location to a folder in your pc
 
 quelea_remote = "http://192.168.1.14:1112"
@@ -23,9 +24,13 @@ python3 main.py
 
 ## obs settings
 add a browser source and type as url
+
 the ```http://<ip running the python script>:<port in configuration>/live_obs_html/<source name>/first```
+
 set high and width to your video resolution
+
 copy one of the examples style_music.css or style_verse.css and paste in personalized css box.
+
 activate refresh when turning visible
 
 ## usage
@@ -36,5 +41,6 @@ activate refresh when turning visible
 
 ## troubleshooting
 if you have refresh when turning visible if any of the views bug you can activate and deactivate to force a refresh of the page
+
 if the proble persist you can click on refresh cache of the page on the preferences of the source
 
