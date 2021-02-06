@@ -1,0 +1,88 @@
+body { 
+    background-color: rgba(0, 0, 0, 0); 
+    margin: 0px auto; 
+    overflow: hidden; 
+}
+
+p{
+    margin: 5;
+    font-family: Helvetica, Sans-Serif;
+}
+div#music {
+    display: none;
+    vertical-align: middle;
+    font-size: 40px;
+    position: absolute;
+    left: 0px;
+    top: 550;
+    width: 1280;
+    height: 100;
+    text-align: center;
+    color: white;
+}
+div #music_content {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+    width: 1280;
+}
+
+div #music #music_content p{
+  display: block;
+  vertical-align: middle;
+  color: white;
+  text-shadow:
+    -2px -2px 0 #000,
+     0   -2px 0 #000,
+     2px -2px 0 #000,
+     2px  0   0 #000,
+     2px  2px 0 #000,
+     0    2px 0 #000,
+    -2px  2px 0 #000,
+    -2px  0   0 #000;
+}
+
+div#verse {
+    position: absolute;
+    color:white;
+    left: 50px;
+    top: 150px;
+    width: 750px;
+    height: 400px;
+}
+
+.wrap {
+     fill: white;
+    font-family: Helvetica, Sans-Serif;;
+}
+div#ref {
+    position: absolute;
+    left: 40px;
+    top: 550px;
+    width: 750px;
+    height: 50px;
+}
+  
+div#ref p {
+  font-size: 40px;
+  text-align: right;
+  color: white;
+}
+
+div#version{
+    text-align: right;
+    font-size: 40px;
+    position: absolute;
+    left: 50px;
+    top: 600;
+    width: 750;
+    height: 50;
+    color: white;
+}
+
+div#version p {
+   font-size: 30px;
+  text-align: right;
+  color: white;
+} 
+
