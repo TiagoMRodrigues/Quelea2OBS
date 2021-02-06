@@ -17,9 +17,12 @@ print_to_file = True
 timestamps = {}
 splited_lines = []
 to_obs_str = ""
+to_obs_ref = ""
 current_timestamp = datetime.datetime.now()
 blanked = "some value"
 bible = "some value"
+title = ""
+bversion = ""
 
 def make_request(request_):
     url = request_.path
@@ -66,8 +69,6 @@ def status():
     return  Response(r.text, status=r.status_code, headers=dict(r.raw.headers),)
 
 
-
-
 @app.route('/lyrics')
 def lyrics():
     global selected
@@ -77,6 +78,10 @@ def lyrics():
     global to_obs_str
     global current_timestamp
     global bible
+    global title
+    global bversion
+    to_obs_str = ""
+
 
     r = make_request(request)
     r.encoding = quelea_encode
@@ -102,9 +107,23 @@ def lyrics():
     new_a = None
     new_div = None
     to_obs = False
-    to_obs_str = ""
+    title = ""
+    bversion = ""
 
+    v = parsed_html.find_all('i') # type: element.Tag
+    if len(v) > 0:
 
+        z = v[0].text.split("\n")
+        if len(z) >= 2:
+            if ":" in z[0]:
+                title = ":".join(z[0].split(":")[1:])
+                bversion = z[1]
+        else:
+            title = z[0]
+            bversion = ""                 
+
+    print(f"title <{title}> bversion <{bversion}> ")
+    
     for s in span_list:
         if new_a is None:
             a_attrs = {"onclick":f"""section("{section}ss{len(n_divs)}");"""}
@@ -161,6 +180,98 @@ def lyrics():
 
 
 
+@app.route('/cifras')
+def cifras():
+    #r = make_request(request)
+    #r.encoding = quelea_encode
+    
+    r = requests.get(f"{quelea_remote}/chordsv2")
+
+    tbr = f"""
+    <html>
+    <head>
+    <title>Agradece ao teu irmão</title>
+    <style>
+        span.chord{{
+          color: red;
+        }}
+
+        div.inner{{
+            margin-bottom: 25px;
+            border-bottom: 1px;
+            border-style: none;
+            border-bottom-style: solid;
+        }}
+        div.current{{
+            background-color: #a6F1FF;
+        }}
+
+
+        #zoomable{{
+           overflow-x: visible;
+          white-space: nowrap;
+              
+          }}
+
+
+        #content{{
+            left: 15px;
+            position: fixed;
+            overflow: visible;
+            -moz-transform-origin: top left;
+            -ms-transform-origin: top left;
+            -o-transform-origin: top left;
+            -webkit-transform-origin: top left;
+             transform-origin: top left;
+            -moz-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+            -webkit-transition: all .2s ease-in-out;
+             transition: all .2s ease-in-out;
+        }}
+    </style>
+    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script language="javascript" type="text/javascript">
+
+    var timeout = setInterval(reloadChat, 1000);    
+    function reloadChat () {{
+
+         $('#content').load('/chordsv2');
+
+
+            var width = document.getElementById('content').offsetWidth + 5;
+            var height = document.getElementById('content').offsetHeight +5;
+            var windowWidth = $(document).outerWidth();
+            var windowHeight = $(document).outerHeight();
+            var r = 1;
+            r = Math.min(windowWidth / width, windowHeight / height)
+
+            $('#content').css({{
+                '-webkit-transform': 'scale(' + r + ')',
+                '-moz-transform': 'scale(' + r + ')',
+                '-ms-transform': 'scale(' + r + ')',
+                '-o-transform': 'scale(' + r + ')',
+                'transform': 'scale(' + r + ')'
+            }});
+
+    }}
+    
+    </script>
+    
+    </head>
+    <body>
+    <div id="zoomable">
+        <div id="content">
+            {r.text}
+        </div>
+    </div>
+    </body>
+    </html>
+
+    """
+    return Response(tbr, status=200, mimetype='text/html')
+
+
+
 @app.route('/live_obs/<identifier>/<portion>')
 def live_obs(identifier, portion):
     global timestamps
@@ -187,7 +298,28 @@ def live_obs(identifier, portion):
         tbr = ""
     elif portion == "bible":
         if bible:
-            tbr = to_obs_str
+            
+            last_verse_index = 0
+
+            for x,y in enumerate(to_obs_str):
+                last_verse_index = x
+                if y not in "0123456789":
+                    break
+
+
+            tbr = to_obs_str[:last_verse_index] + ' - ' + to_obs_str[last_verse_index:]  
+
+        else:
+            tbr = ""
+    elif portion == "ref":
+        if bible:
+            tbr = title.split(":")[0]
+        else:
+            tbr = ""
+
+    elif portion == "bible_version":
+        if bible:
+            tbr = bversion 
         else:
             tbr = ""
 
@@ -199,8 +331,19 @@ def live_obs(identifier, portion):
     else:
         if portion.isnumeric():
             p_int = int(portion)
+
+            tlines = request.args.get("tlines", 0)
+            p_total = int(tlines)
+
             print(len(splited_lines) , (p_int -1) , p_int , 0)
-            if (p_int -1) < len(splited_lines)  and p_int > 0:
+            
+            if p_total > 0 and p_total == sum([1 for _x in splited_lines if len(_x.strip()) > 0 ]) :
+                if bible:
+                    tbr = ""
+                else:
+                    tbr = splited_lines[p_int - 1] 
+
+            if p_total == 0 and (p_int -1) < len(splited_lines)  and p_int > 0:
                 if bible:
                     tbr = ""
                 else:
@@ -208,6 +351,140 @@ def live_obs(identifier, portion):
 
 
     return Response(tbr, status=200, mimetype='text/plain')
+
+
+
+@app.route('/live_obs_html/<identifier>/<portion>')
+def live_obs_html(identifier, portion):
+    global timestamps
+    global current_timestamp
+    global splited_lines
+    global to_obs_str
+    global blanked
+    global bible
+
+    n = datetime.datetime.now()
+    timeout = True
+
+    if portion != 'first':
+	    while((datetime.datetime.now() - n).total_seconds() < 10):
+	        if identifier not in timestamps or timestamps[identifier] < current_timestamp:
+	            timeout = False
+	            break
+
+	        sleep(.1)
+
+	    if timeout == False:
+	        timestamps[identifier] = current_timestamp
+    
+    verse = ""  
+    ref = ""
+    version = ""
+    music = ""
+    verse_svg = ""
+
+    if blanked:
+	    verse = ""  
+	    ref = ""
+	    version = ""
+	    music = ""
+    elif bible:
+        last_verse_index = 0
+
+        for x,y in enumerate(to_obs_str):
+            last_verse_index = x
+            if y not in "0123456789":
+                break
+
+        verse = to_obs_str[:last_verse_index] + ' - ' + to_obs_str[last_verse_index:]  
+        
+        verse = "\n".join([f"{x}" for x in verse.split("/n")])
+        
+        verse_svg = f"""<svg width="100%" height="100%">
+                            <text id="rectResize" class="wrap" height="100%" width="100%">{verse}</text>
+						</svg> """
+
+        ref = title.split(":")[0]
+        ref = "\n".join([f"<p>{x}</p>" for x in ref.split("/n")])
+
+        version = bversion
+        version = "\n".join([f"<p>{x}</p>" for x in version.split("/n")])
+
+
+    else:
+        music = splited_lines
+        music = "\n".join([f"<p>{x}</p>" for x in music if len(x) > 0])
+
+    content = f"""
+    				<div id='verse'>
+    					{verse_svg}
+    				</div>
+    				<div id='music'>
+    					<div id='music_content'>
+	    				     {music}
+	    				</div>
+    				</div>
+    				<div id='ref'>
+    					{ref}
+    				</div>
+    				<div id='version'>
+						{version}
+    				</div>
+    """
+
+
+    if portion == 'content':
+    	return Response(content, status=200)
+
+    tbr = f"""
+    	<html>
+    		<head>
+
+	    		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	    		<script src="https://d3js.org/d3.v4.min.js"></script>
+                <script src="https://d3plus.org/js/d3.js"></script><!-- https: added -->
+                <script src="https://d3plus.org/js/d3plus.js"></script><!-- https: added -->
+    			<script>
+    				verse_size_w = 500;
+					verse_size_h = 500;
+					$(document).ready(function(){{
+					  	verse_size_w = $('#verse').width();
+						verse_size_h = $('#verse').height();
+						redraw();
+						console.log("f1 in 10ms");
+    					setTimeout(f1, 10);
+
+					}});
+					
+					function redraw(){{
+					    d3plus.textwrap().container(d3.select('#rectResize')).width(verse_size_w).height(verse_size_h).valign("middle").y(0).resize(true).draw();
+					}}
+
+    				function f1(){{
+    					$("#content").load("/live_obs_html/{identifier}/content", function(response, status){{
+    						if ($("#rectResize").length > 0){{
+    							redraw();
+    						}}
+    						setTimeout(f1, 10);    					
+							console.log("f1 in 10ms");
+    					}});
+
+    				}}
+    				
+    				
+    			</script>
+    		</head>
+    		<body>
+    			<div id='content' >
+    				{ content }
+    			</div>
+    		</body>
+    	</html>
+    """
+
+
+    return Response(tbr, status=200)
+
 
 
 def return_response(r):
@@ -228,4 +505,4 @@ def proxy(e):
     return return_response(r)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=port)
+    app.run(host='0.0.0.0',port=port,threaded=True)
