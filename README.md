@@ -8,7 +8,7 @@ than with executable in hand do
 this will install all dependencies necessary for the program to run.
 
 ## quelea configuration
-go to configuration > server settings and activate mobile remote
+go to configuration » server settings and activate mobile remote
 
 
 ## Python configuration
@@ -23,14 +23,14 @@ python3 main.py
 
 ## obs settings
 add a browser source and type as url
-the http://<ip running the python script>:<port in configuration>/live_obs_html/<source name>/first
+the http://«ip running the python script»:«port in configuration»/live_obs_html/«source name»/first
 set high and width to your video resolution
 copy one of the examples style_music.css or style_verse.css and paste in personalized css box.
 activate refresh when turning visible
 
 ## usage
 - open quelea
-- go to http://<ip running the python script>:<port in configuration>
+- go to http://«ip running the python script»:«port in configuration»
 - enter the password that is set in server settings
 - you can use the lighter blue to change the lines that are being sent to obs.
 
