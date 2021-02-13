@@ -45,10 +45,10 @@ div #music #music_content p{
 div#verse {
     position: absolute;
     color:white;
-    left: 50px;
+    left: 75px;
     top: 150px;
-    width: 750px;
-    height: 400px;
+    width: 1025px;
+    height: 750px;
 }
 
 .wrap {
@@ -57,9 +57,9 @@ div#verse {
 }
 div#ref {
     position: absolute;
-    left: 40px;
-    top: 550px;
-    width: 750px;
+    left: 75px;
+    top: 900px;
+    width: 1025px;
     height: 50px;
 }
   
@@ -73,9 +73,9 @@ div#version{
     text-align: right;
     font-size: 40px;
     position: absolute;
-    left: 50px;
-    top: 600;
-    width: 750;
+    left: 75px;
+    top: 950;
+    width: 1025;
     height: 50;
     color: white;
 }

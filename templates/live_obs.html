@@ -1,0 +1,71 @@
+<html lang="pt">
+    <head>
+
+        <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/js/d3.v4.min.js"></script>
+        <script type="text/javascript" src="/static/js/d3.js"></script><!-- https: added -->
+        <script type="text/javascript" src="/static/js/d3plus.js"></script><!-- https: added -->
+        <script type="text/javascript" src="/static/js/socket.io.js"></script>
+        <script type="text/javascript" charset="utf-8">
+
+            var socket = io();
+            socket.on('update', function(data) {
+                console.log(data);
+                if(data["type"] === "BIBLE"){
+                    $("#verse")[0].innerHTML= `
+                    <svg width="100%" height="100%">
+                            <text id="rectResize" class="wrap" height="100%" width="100%">`+data["bible_verse"]+`</text>
+					</svg>
+                    `
+                    $(document).ready(redraw())
+                }else{
+                     $("#verse")[0].innerHTML=""
+                }
+
+                $("#version")[0].innerHTML = '<p>'+data["bible_version"]+'</p>';
+                $("#ref")[0].innerHTML = '<p>'+data["bible_ref"]+'</p>';
+
+                x = ""
+                var a = data["music_lyrics"].split(/\r|\n/);
+                var index;
+                for (index = 0; index < a.length; ++index) {
+                    if(+a[index].length > 0)
+                        x+="<p>"+a[index]+"<p>\n";
+                }
+                console.log(x)
+                $("#music_content")[0].innerHTML = x;
+            });
+
+            verse_size_w = 500;
+            verse_size_h = 500;
+            $(document).ready(function(){
+                verse_size_w = $('#verse').width();
+                verse_size_h = $('#verse').height();
+                if(verse_size_h === 0){
+                    verse_size_h= 500;
+                }
+            });
+
+            function redraw(){
+                d3plus.textwrap().container(d3.select('#rectResize')).width(verse_size_w).height(verse_size_h).valign("middle").y(0).resize(true).draw();
+            }
+
+        </script>
+        <title>LIVE QUELEA2OBS</title>
+    </head>
+    <body>
+        <div id='content' >
+            <div id='verse'>
+
+            </div>
+            <div id='music'>
+                <div id='music_content'>
+                </div>
+            </div>
+            <div id='ref'>
+            </div>
+            <div id='version'>
+            </div>
+        </div>
+    </body>
+</html>

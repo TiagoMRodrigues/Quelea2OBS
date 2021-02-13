@@ -13,15 +13,12 @@ Go to ```configuration > server settings``` and activate mobile remote.
 ## Python Configuration
 Change the lines for the ip and port that appear in server settings.
 
-Change file location to a folder in your pc.
-
 ```
 quelea_remote = "http://192.168.1.14:1112"
-file_location = "/home/igreja/StreamResources/QueleaActiveLyrics.txt"
 ```
 
 ## Python Run
-python3 main.py
+`python3 -u waitress_server.py`
 
 ## OBS Settings
 Add a browser source and type as URL the following: ```http://<ip running the python script>:<port in configuration>/live_obs_html/<source name>/first```.
@@ -38,7 +35,7 @@ Activate `refresh when turning visible`.
 - Enter the password that is set in Quelea server settings.
 - You can use the lighter blue to change the lines that are being sent to obs.
 
-## troubleshooting
+## Troubleshooting
 If you have `refresh when turning visible` on if any of the views bug out, you can activate and deactivate to force a refresh of the page.
 
 If the problem persist you can click on `refresh cache of the page` on the preferences of the source.

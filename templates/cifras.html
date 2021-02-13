@@ -1,0 +1,79 @@
+<html>
+    <head>
+    <title>Cifras</title>
+    <style>
+        span.chord{
+          color: red;
+        }
+
+        div.inner{
+            margin-bottom: 25px;
+            border-bottom: 1px;
+            border-style: none;
+            border-bottom-style: solid;
+        }
+        div.current{
+            background-color: #a6F1FF;
+        }
+
+
+        #zoomable{
+           overflow-x: visible;
+          white-space: nowrap;
+
+          }
+
+
+        #content{
+            left: 15px;
+            position: fixed;
+            overflow: visible;
+            -moz-transform-origin: top left;
+            -ms-transform-origin: top left;
+            -o-transform-origin: top left;
+            -webkit-transform-origin: top left;
+             transform-origin: top left;
+            -moz-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+            -webkit-transition: all .2s ease-in-out;
+             transition: all .2s ease-in-out;
+        }
+    </style>
+    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script language="javascript" type="text/javascript">
+
+    var timeout = setInterval(reloadChat, 1000);
+    function reloadChat () {
+
+         $('#content').load('/chordsv2');
+
+
+            var width = document.getElementById('content').offsetWidth + 5;
+            var height = document.getElementById('content').offsetHeight +5;
+            var windowWidth = $(document).outerWidth();
+            var windowHeight = $(document).outerHeight();
+            var r = 1;
+            r = Math.min(windowWidth / width, windowHeight / height)
+
+            $('#content').css({
+                '-webkit-transform': 'scale(' + r + ')',
+                '-moz-transform': 'scale(' + r + ')',
+                '-ms-transform': 'scale(' + r + ')',
+                '-o-transform': 'scale(' + r + ')',
+                'transform': 'scale(' + r + ')'
+            });
+
+    }
+
+    </script>
+
+    </head>
+    <body>
+    <div id="zoomable">
+        <div id="content">
+            {r.text}
+        </div>
+    </div>
+    </body>
+</html>
+
