@@ -21,7 +21,7 @@ quelea_remote = "http://192.168.1.14:1112"
 `python3 -u waitress_server.py`
 
 ## OBS Settings
-Add a browser source and type as URL the following: ```http://<ip running the python script>:<port in configuration>/live_obs_html/<source name>/first```.
+Add a browser source and type as URL the following: ```http://<ip running the python script>:<port in configuration>/live_obs_html```.
 
 Set height and width equals to your video resolution.
 
