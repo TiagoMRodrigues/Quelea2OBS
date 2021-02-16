@@ -47,7 +47,7 @@ div#verse {
     color:white;
     left: 75px;
     top: 150px;
-    width: 1025px;
+    width: 1075px;
     height: 750px;
 }
 
@@ -59,7 +59,7 @@ div#ref {
     position: absolute;
     left: 75px;
     top: 900px;
-    width: 1025px;
+    width: 1075px;
     height: 50px;
 }
   
@@ -75,7 +75,7 @@ div#version{
     position: absolute;
     left: 75px;
     top: 950;
-    width: 1025;
+    width: 1075;
     height: 50;
     color: white;
 }

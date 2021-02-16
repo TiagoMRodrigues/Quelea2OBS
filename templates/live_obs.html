@@ -32,8 +32,20 @@
                     if(+a[index].length > 0)
                         x+="<p>"+a[index]+"<p>\n";
                 }
-                console.log(x)
+                //console.log(x)
                 $("#music_content")[0].innerHTML = x;
+
+
+                $("#music")[0].style.visibility = "hidden";
+                $("#verse_complete")[0].style.visibility = "hidden";
+                
+                if(data["type"] === "BIBLE"){
+                    $("#verse_complete")[0].style.visibility = "visible";
+                }
+                if(data["type"] === "MUSIC"){
+                    $("#music")[0].style.visibility = "visible";
+                }
+
             });
 
             verse_size_w = 500;
@@ -55,16 +67,18 @@
     </head>
     <body>
         <div id='content' >
-            <div id='verse'>
-
-            </div>
             <div id='music'>
                 <div id='music_content'>
                 </div>
             </div>
-            <div id='ref'>
-            </div>
-            <div id='version'>
+            
+            <div id='verse_complete'>
+                <div id='verse'>
+                </div>
+                <div id='ref'>
+                </div>
+                <div id='version'>
+                </div>
             </div>
         </div>
     </body>

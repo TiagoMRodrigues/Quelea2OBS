@@ -9,9 +9,11 @@ idna==2.10
 itsdangerous==1.1.0
 Jinja2==2.11.3
 MarkupSafe==1.1.1
+Paste==3.5.0
 python-engineio==4.0.0
 python-socketio==5.0.4
 requests==2.25.1
+six==1.15.0
 soupsieve==2.2
 urllib3==1.26.3
 waitress==1.4.4
