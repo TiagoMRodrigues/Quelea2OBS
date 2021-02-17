@@ -1,6 +1,8 @@
 import requests
 import html.parser
 import datetime
+import os
+import json
 from flask import Flask, Response, request, render_template, session, copy_current_request_context
 from bs4 import BeautifulSoup, element
 from typing import List
@@ -12,6 +14,10 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
+bnc = {}
+bnc_file = "bible_names_corrector.json"
+if os.path.isfile(bnc_file):
+    bnc = json.load(open(bnc_file))
 
 class live_obs_show_data():
     def __init__(self):
@@ -55,7 +61,15 @@ class live_obs_show_data():
                     b = z[1]
 
                     if self.is_bible_on:
+                        r = a.split(" ")
+                        l = " ".join(r[:-1]).strip()
+                        c = r[-1]
+
+                        if l in bnc:
+                            a = f"{bnc[r[0].strip()]} {c}"
+
                         self.bible_ref, self.bible_version = a,b
+
                     else:
                         self.music_name, self.music_author = a,b
 
